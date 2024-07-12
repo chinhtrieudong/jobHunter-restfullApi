@@ -2,6 +2,8 @@ package vn.hoidanit.jobhunter.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.service.UserService;
+import vn.hoidanit.jobhunter.service.error.IdInvalidException;
 
 @RestController
 public class UserController {
@@ -22,33 +25,36 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user")
-    public User createNewUser(@RequestBody User newUser) {
+    @PostMapping("/users")
+    public ResponseEntity<User> createNewUser(@RequestBody User newUser) {
         User user = this.userService.handleCreateUser(newUser);
-        return user;
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @DeleteMapping("/user/{id}")
-    public long deleteUser(@PathVariable("id") long id) {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
         this.userService.handleDeleteUser(id);
-        return id;
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{id}")
-    public User getUser(@PathVariable("id") long id) {
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") long id) throws IdInvalidException {
+        if (id > 100) {
+            throw new IdInvalidException("error !!");
+        }
         User curUser = this.userService.fetchUserById(id);
-        return curUser;
+        return ResponseEntity.ok().body(curUser);
     }
 
-    @GetMapping("/user")
-    public List<User> getAllUser() {
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUser() {
         List<User> users = this.userService.fetchAllUser();
-        return users;
+        return ResponseEntity.ok().body(users);
     }
 
-    @PutMapping("/user")
-    public User updateUser(@RequestBody User reqUser) {
+    @PutMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User reqUser) {
         User user = this.userService.handleUpdateUser(reqUser);
-        return user;
+        return ResponseEntity.ok(user);
     }
 }
