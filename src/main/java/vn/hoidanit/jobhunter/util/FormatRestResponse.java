@@ -50,5 +50,4 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         }
         return res;
     }
-
 }
