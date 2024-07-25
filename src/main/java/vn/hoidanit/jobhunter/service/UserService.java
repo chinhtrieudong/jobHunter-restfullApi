@@ -128,4 +128,12 @@ public class UserService {
         return res;
     }
 
+    public void updateUserToken(String token, String email) {
+        User curUser = this.getUserByUserName(email);
+        if (curUser != null) {
+
+            curUser.setRefreshToken(token);
+            this.userRepository.save(curUser);
+        }
+    }
 }
