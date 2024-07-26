@@ -38,17 +38,18 @@ public class User {
 
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
-    private Instant createAt;
-    private Instant updateAt;
+
+    private Instant createdAt;
+    private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
 
     @PrePersist
-    public void handleCreateAt() {
+    public void handleBeforeCreate() {
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
-        this.createAt = Instant.now();
+        this.createdAt = Instant.now();
     }
 
     @PreUpdate
@@ -56,6 +57,6 @@ public class User {
         this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
-        this.updateAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 }

@@ -11,11 +11,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.Meta;
-import vn.hoidanit.jobhunter.domain.dto.ResCreateUserDTO;
-import vn.hoidanit.jobhunter.domain.dto.ResUpdateUserDTO;
-import vn.hoidanit.jobhunter.domain.dto.ResUserDTO;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.response.ResCreateUserDTO;
+import vn.hoidanit.jobhunter.domain.response.ResUpdateUserDTO;
+import vn.hoidanit.jobhunter.domain.response.ResUserDTO;
+import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -47,7 +46,7 @@ public class UserService {
         Page<User> pageUser = this.userRepository.findAll(spec, pageable);
 
         ResultPaginationDTO result = new ResultPaginationDTO();
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
         meta.setPage(pageUser.getNumber() + 1);
         meta.setPageSize(pageUser.getSize());
@@ -64,8 +63,8 @@ public class UserService {
                 item.getGender(),
                 item.getAddress(),
                 item.getAge(),
-                item.getCreateAt(),
-                item.getUpdateAt())).collect(Collectors.toList());
+                item.getCreatedAt(),
+                item.getUpdatedAt())).collect(Collectors.toList());
 
         result.setResult(listUser);
         return result;
@@ -100,7 +99,7 @@ public class UserService {
         res.setAge(user.getAge());
         res.setGender(user.getGender());
         res.setEmail(user.getEmail());
-        res.setCreateAt(user.getCreateAt());
+        res.setCreatedAt(user.getCreatedAt());
         return res;
     }
 
@@ -112,8 +111,8 @@ public class UserService {
         res.setAge(user.getAge());
         res.setAddress(user.getAddress());
         res.setGender(user.getGender());
-        res.setCreateAt(user.getCreateAt());
-        res.setUpdateAt(user.getUpdateAt());
+        res.setCreatedAt(user.getCreatedAt());
+        res.setUpdatedAt(user.getUpdatedAt());
         return res;
     }
 
@@ -124,7 +123,7 @@ public class UserService {
         res.setGender(user.getGender());
         res.setAddress(user.getAddress());
         res.setAge(user.getAge());
-        res.setUpdateAt(user.getUpdateAt());
+        res.setUpdateAt(user.getUpdatedAt());
         return res;
     }
 

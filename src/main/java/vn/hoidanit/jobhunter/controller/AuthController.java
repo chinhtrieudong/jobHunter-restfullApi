@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.LoginDTO;
-import vn.hoidanit.jobhunter.domain.dto.ResLoginDTO;
+import vn.hoidanit.jobhunter.domain.request.ReqLoginDTO;
+import vn.hoidanit.jobhunter.domain.response.ResLoginDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
@@ -44,7 +44,7 @@ public class AuthController {
         }
 
         @PostMapping("/auth/login")
-        public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+        public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
                 // Nạp input gồm username/password vào Security
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                                 loginDTO.getUsername(),
@@ -64,11 +64,11 @@ public class AuthController {
                         userLogin.setId(curUser.getId());
                         userLogin.setEmail(curUser.getEmail());
                         userLogin.setName(curUser.getName());
-                        res.setUserLogin(userLogin);
+                        res.setUser(userLogin);
                 }
 
                 // create access_token
-                String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUserLogin());
+                String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
                 res.setAccessToken(access_token);
 
                 // create refreshToken
@@ -91,27 +91,29 @@ public class AuthController {
 
         @GetMapping("/auth/account")
         @ApiMessage("Get user information")
-        public ResponseEntity<ResLoginDTO.UserLogin> getUserAccount() {
+        public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
                 String email = SecurityUtil.getCurrentUserLogin().isPresent()
                                 ? SecurityUtil.getCurrentUserLogin().get()
                                 : "";
 
                 ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+                ResLoginDTO.UserGetAccount userGetAccount = new ResLoginDTO.UserGetAccount();
                 User curUser = this.userService.getUserByUserName(email);
                 if (curUser != null) {
                         userLogin.setId(curUser.getId());
                         userLogin.setEmail(curUser.getEmail());
                         userLogin.setName(curUser.getName());
+                        userGetAccount.setUser(userLogin);
                 }
 
-                return ResponseEntity.ok().body(userLogin);
+                return ResponseEntity.ok().body(userGetAccount);
         }
 
         @GetMapping("/auth/refresh")
         public ResponseEntity<ResLoginDTO> getRefreshToken(
                         @CookieValue(name = "refresh_token", defaultValue = "error") String refresh_token) {
                 if (refresh_token.equals("error")) {
-                        throw new IdInvalidException("Không có Refresh Token");
+                        throw new IdInvalidException("You don't have Refresh Token in cookies!");
                 }
                 // check valid
                 Jwt decodeToken = this.securityUtil.checkValidRefreshToken(refresh_token);
@@ -124,7 +126,6 @@ public class AuthController {
                 }
 
                 // issues new token/set refresh token as cookies
-
                 ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
                 User curUserDB = this.userService.getUserByUserName(email);
                 ResLoginDTO res = new ResLoginDTO();
@@ -132,11 +133,11 @@ public class AuthController {
                         userLogin.setId(curUserDB.getId());
                         userLogin.setEmail(curUserDB.getEmail());
                         userLogin.setName(curUserDB.getName());
-                        res.setUserLogin(userLogin);
+                        res.setUser(userLogin);
                 }
 
                 // create access_token
-                String access_token = this.securityUtil.createAccessToken(email, res.getUserLogin());
+                String access_token = this.securityUtil.createAccessToken(email, res.getUser());
                 res.setAccessToken(access_token);
 
                 // create refreshToken
@@ -155,6 +156,33 @@ public class AuthController {
                 return ResponseEntity.ok()
                                 .header(HttpHeaders.SET_COOKIE, resCookies.toString())
                                 .body(res);
+        }
+
+        @GetMapping("/auth/logout")
+        @ApiMessage("Logout User")
+        public ResponseEntity<Void> logout() {
+                String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                                ? SecurityUtil.getCurrentUserLogin().get()
+                                : "";
+
+                if (email.equals("")) {
+                        throw new IdInvalidException("Invalid access token!");
+                }
+
+                // Update refresh_token === null
+                this.userService.updateUserToken(null, email);
+
+                // Remove refresh_token in cookies.
+                ResponseCookie deleteSpringCookie = ResponseCookie
+                                .from("refresh_token", null)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .build();
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
+                                .build();
         }
 
 }
