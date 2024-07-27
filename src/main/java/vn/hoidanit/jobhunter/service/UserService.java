@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResCreateUserDTO;
 import vn.hoidanit.jobhunter.domain.response.ResUpdateUserDTO;
@@ -20,12 +21,18 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final CompanyService companyService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CompanyService companyService) {
         this.userRepository = userRepository;
+        this.companyService = companyService;
     }
 
     public User handleCreateUser(User newUser) {
+        Company company = this.companyService.fetchById(newUser.getCompany().getId()).isPresent()
+                ? this.companyService.fetchById(newUser.getCompany().getId()).get()
+                : null;
+        newUser.setCompany(company);
         User savedUser = this.userRepository.save(newUser);
         return savedUser;
     }
@@ -64,7 +71,9 @@ public class UserService {
                 item.getAddress(),
                 item.getAge(),
                 item.getCreatedAt(),
-                item.getUpdatedAt())).collect(Collectors.toList());
+                item.getUpdatedAt(),
+                new ResUserDTO.Company(item.getCompany().getId(), item.getCompany().getName())))
+                .collect(Collectors.toList());
 
         result.setResult(listUser);
         return result;
@@ -100,6 +109,7 @@ public class UserService {
         res.setGender(user.getGender());
         res.setEmail(user.getEmail());
         res.setCreatedAt(user.getCreatedAt());
+        res.setCompany(new ResCreateUserDTO.Company(user.getCompany().getId(), user.getCompany().getName()));
         return res;
     }
 
@@ -113,6 +123,7 @@ public class UserService {
         res.setGender(user.getGender());
         res.setCreatedAt(user.getCreatedAt());
         res.setUpdatedAt(user.getUpdatedAt());
+        res.setCompany(new ResUserDTO.Company(user.getCompany().getId(), user.getCompany().getName()));
         return res;
     }
 
@@ -120,10 +131,12 @@ public class UserService {
         ResUpdateUserDTO res = new ResUpdateUserDTO();
         res.setId(user.getId());
         res.setName(user.getName());
+        res.setEmail(user.getEmail());
         res.setGender(user.getGender());
         res.setAddress(user.getAddress());
         res.setAge(user.getAge());
         res.setUpdateAt(user.getUpdatedAt());
+        res.setCompany(new ResUpdateUserDTO.Company(user.getCompany().getId(), user.getCompany().getName()));
         return res;
     }
 

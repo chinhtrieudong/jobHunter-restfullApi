@@ -21,4 +21,14 @@ public class ResUserDTO {
     private int age;
     private Instant updatedAt;
     private Instant createdAt;
+    private Company company;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Company {
+        private long id;
+        private String name;
+    }
 }
