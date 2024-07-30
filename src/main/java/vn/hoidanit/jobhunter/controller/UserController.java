@@ -41,7 +41,7 @@ public class UserController {
     @ApiMessage("Fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
             @Filter Specification<User> spec, Pageable pageable) {
-        return ResponseEntity.ok().body(this.userService.fetchAllUser(spec, pageable));
+        return ResponseEntity.ok().body(this.userService.fetchAllUsers(spec, pageable));
     }
 
     @PostMapping("/users")
