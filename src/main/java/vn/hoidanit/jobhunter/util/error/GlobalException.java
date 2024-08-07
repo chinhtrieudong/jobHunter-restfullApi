@@ -62,7 +62,7 @@ public class GlobalException {
 
     // handle exception file upload
     @ExceptionHandler(value = {
-            StorageFileNotFoundException.class
+            StorageException.class
     })
     public ResponseEntity<RestResponse<Object>> handleFileUploadException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
