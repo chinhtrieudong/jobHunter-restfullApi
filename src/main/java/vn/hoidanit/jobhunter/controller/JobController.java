@@ -44,10 +44,11 @@ public class JobController {
     @PutMapping("jobs")
     @ApiMessage("Update a job")
     public ResponseEntity<ResUpdateJobDTO> updateJob(@RequestBody Job job) {
+        Optional<Job> jobOptional = this.jobService.fetchJobById(job.getId());
         if (!this.jobService.isExistsById(job.getId())) {
             throw new IdInvalidException("ID does not exist");
         }
-        return ResponseEntity.ok().body(this.jobService.updateJob(job));
+        return ResponseEntity.ok().body(this.jobService.updateJob(job, jobOptional.get()));
     }
 
     @DeleteMapping("jobs/{id}")
@@ -65,7 +66,7 @@ public class JobController {
     @ApiMessage("Get a job by id")
     public ResponseEntity<Job> getJob(@PathVariable("id") long id) throws IdInvalidException {
         Optional<Job> currentJob = this.jobService.fetchJobById(id);
-        if (!currentJob.isPresent()) {
+        if (currentJob.isEmpty()) {
             throw new IdInvalidException("Job not found");
         }
 

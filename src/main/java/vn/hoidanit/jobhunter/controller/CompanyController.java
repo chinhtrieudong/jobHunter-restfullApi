@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1")
 public class CompanyController {
@@ -43,12 +45,6 @@ public class CompanyController {
         return ResponseEntity.ok(this.companyService.handleSaveCompany(company));
     }
 
-    @GetMapping("/companies/{id}")
-    public ResponseEntity<Company> getCompany(@PathVariable("id") long id) {
-        Company curCompany = this.companyService.fetchById(id).get();
-        return ResponseEntity.ok().body(curCompany);
-    }
-
     @DeleteMapping("/companies/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
         this.companyService.deleteById(id);
@@ -58,5 +54,12 @@ public class CompanyController {
     @PutMapping("companies")
     public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company reqCompany) {
         return ResponseEntity.ok().body(this.companyService.handleUpdateCompany(reqCompany));
+    }
+
+    @GetMapping("companies/{id}")
+    @ApiMessage("fetch company by id")
+    public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") long id){
+        Optional<Company> cOptional = this.companyService.fetchById(id);
+        return ResponseEntity.ok().body(cOptional.get());
     }
 }

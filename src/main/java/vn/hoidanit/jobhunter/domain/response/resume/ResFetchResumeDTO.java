@@ -12,7 +12,7 @@ import vn.hoidanit.jobhunter.util.constant.ResumeStatusEnum;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeDTO {
+public class ResFetchResumeDTO {
     private long id;
     private String email;
     private String url;
@@ -24,6 +24,7 @@ public class ResumeDTO {
     private String createdBy;
     private String updatedBy;
 
+    private String companyName;
     private UserDTO user;
     private JobDTO job;
 

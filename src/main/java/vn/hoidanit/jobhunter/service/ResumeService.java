@@ -16,7 +16,7 @@ import vn.hoidanit.jobhunter.domain.Resume;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.resume.ResCreateResumeDTO;
-import vn.hoidanit.jobhunter.domain.response.resume.ResumeDTO;
+import vn.hoidanit.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.hoidanit.jobhunter.domain.response.resume.ResUpdateResumeDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.ResumeRepository;
@@ -41,10 +41,6 @@ public class ResumeService {
         return this.resumeRepository.findById(id);
     }
 
-    public boolean existById(long id) {
-        return this.resumeRepository.existsById(id);
-    }
-
     public boolean checkResumeExistByUserAndJob(Resume resume) {
         if (resume.getUser() == null)
             return false;
@@ -57,10 +53,7 @@ public class ResumeService {
             return false;
 
         Optional<Job> jobOptional = this.jobRepository.findById(resume.getJob().getId());
-        if (jobOptional.isEmpty())
-            return false;
-
-        return true;
+        return jobOptional.isPresent();
     }
 
     public ResCreateResumeDTO createResume(Resume resume) {
@@ -85,8 +78,8 @@ public class ResumeService {
         this.resumeRepository.deleteById(id);
     }
 
-    public ResumeDTO getResume(Resume resume) {
-        ResumeDTO res = new ResumeDTO();
+    public ResFetchResumeDTO getResume(Resume resume) {
+        ResFetchResumeDTO res = new ResFetchResumeDTO();
 
         res.setId(resume.getId());
         res.setEmail(resume.getEmail());
@@ -97,11 +90,15 @@ public class ResumeService {
         res.setCreatedBy(resume.getCreatedBy());
         res.setUpdatedBy(resume.getUpdatedBy());
 
-        ResumeDTO.UserDTO user = new ResumeDTO.UserDTO();
+        if(resume.getJob() != null){
+            res.setCompanyName(resume.getJob().getCompany().getName());
+        }
+
+        ResFetchResumeDTO.UserDTO user = new ResFetchResumeDTO.UserDTO();
         user.setId(resume.getUser().getId());
         user.setName(resume.getUser().getName());
         res.setUser(user);
-        ResumeDTO.JobDTO job = new ResumeDTO.JobDTO();
+        ResFetchResumeDTO.JobDTO job = new ResFetchResumeDTO.JobDTO();
         job.setId(resume.getJob().getId());
         job.setName(resume.getJob().getName());
         res.setJob(job);
@@ -123,7 +120,7 @@ public class ResumeService {
         res.setMeta(mt);
 
         // remove sensitive data
-        List<ResumeDTO> listResume = pageUser.getContent()
+        List<ResFetchResumeDTO> listResume = pageUser.getContent()
                 .stream().map(item -> this.getResume(item))
                 .collect(Collectors.toList());
 

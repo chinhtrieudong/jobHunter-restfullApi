@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Resume;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.resume.ResCreateResumeDTO;
-import vn.hoidanit.jobhunter.domain.response.resume.ResumeDTO;
+import vn.hoidanit.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.hoidanit.jobhunter.domain.response.resume.ResUpdateResumeDTO;
 import vn.hoidanit.jobhunter.service.ResumeService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
@@ -77,7 +77,7 @@ public class ResumeController {
 
     @GetMapping("/resumes/{id}")
     @ApiMessage("Get resume by id")
-    public ResponseEntity<ResumeDTO> getResumeById(@PathVariable("id") long id) {
+    public ResponseEntity<ResFetchResumeDTO> getResumeById(@PathVariable("id") long id) {
         Optional<Resume> dbResume = this.resumeService.fetchById(id);
         if (dbResume.isEmpty()) {
             throw new IdInvalidException("Resume with id = " + id + " doesn't exist");
