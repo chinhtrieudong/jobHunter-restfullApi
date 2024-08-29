@@ -47,7 +47,7 @@ public class JobService {
         }
 
         // check company
-        if(job.getCompany() != null){
+        if (job.getCompany() != null) {
             Optional<Company> companyOptional = this.companyRepository.findById(job.getId());
             companyOptional.ifPresent(job::setCompany);
         }
@@ -83,55 +83,55 @@ public class JobService {
         ResUpdateJobDTO resDto = new ResUpdateJobDTO();
 
         // check skills
-            if (job.getSkills() != null) {
-                List<Long> reqSkills = job.getSkills()
-                        .stream().map(j -> j.getId())
-                        .collect(Collectors.toList());
-                List<Skill> dbSkills = this.skillRepository.findByIdIn(reqSkills);
-                jobInDB.setSkills(dbSkills);
-            }
+        if (job.getSkills() != null) {
+            List<Long> reqSkills = job.getSkills()
+                    .stream().map(j -> j.getId())
+                    .collect(Collectors.toList());
+            List<Skill> dbSkills = this.skillRepository.findByIdIn(reqSkills);
+            jobInDB.setSkills(dbSkills);
+        }
 
-            // check company
-        if(job.getCompany() != null) {
+        // check company
+        if (job.getCompany() != null) {
             Optional<Company> companyOptional = this.companyRepository.findById(job.getCompany().getId());
             companyOptional.ifPresent(jobInDB::setCompany);
         }
-        
-            // update correct info
-            jobInDB.setName(job.getName());
-            jobInDB.setSalary(job.getSalary());
-            jobInDB.setQuantity(job.getQuantity());
-            jobInDB.setLocation(job.getLocation());
-            jobInDB.setLevel(job.getLevel());
-            jobInDB.setStartDate(job.getStartDate());
-            jobInDB.setEndDate(job.getEndDate());
-            jobInDB.setActive(job.isActive());
 
-            // update job
-            Job currentJob = this.jobRepository.save(jobInDB);
+        // update correct info
+        jobInDB.setName(job.getName());
+        jobInDB.setSalary(job.getSalary());
+        jobInDB.setQuantity(job.getQuantity());
+        jobInDB.setLocation(job.getLocation());
+        jobInDB.setLevel(job.getLevel());
+        jobInDB.setStartDate(job.getStartDate());
+        jobInDB.setEndDate(job.getEndDate());
+        jobInDB.setActive(job.isActive());
 
-            // convert response
-            ResUpdateJobDTO dto = new ResUpdateJobDTO();
-            dto.setId(currentJob.getId());
-            dto.setName(currentJob.getName());
-            dto.setSalary(currentJob.getSalary());
-            dto.setQuantity(currentJob.getQuantity());
-            dto.setLocation(currentJob.getLocation());
-            dto.setLevel(currentJob.getLevel());
-            dto.setStartDate(currentJob.getStartDate());
-            dto.setEndDate(currentJob.getEndDate());
-            dto.setActive(currentJob.isActive());
-            dto.setUpdatedAt(currentJob.getUpdatedAt());
-            dto.setUpdatedBy(currentJob.getUpdatedBy());
+        // update job
+        Job currentJob = this.jobRepository.save(jobInDB);
 
-            if (currentJob.getSkills() != null) {
-                List<String> skills = currentJob.getSkills()
-                        .stream().map(Skill::getName)
-                        .collect(Collectors.toList());
-                dto.setSkills(skills);
-            }
+        // convert response
+        ResUpdateJobDTO dto = new ResUpdateJobDTO();
+        dto.setId(currentJob.getId());
+        dto.setName(currentJob.getName());
+        dto.setSalary(currentJob.getSalary());
+        dto.setQuantity(currentJob.getQuantity());
+        dto.setLocation(currentJob.getLocation());
+        dto.setLevel(currentJob.getLevel());
+        dto.setStartDate(currentJob.getStartDate());
+        dto.setEndDate(currentJob.getEndDate());
+        dto.setActive(currentJob.isActive());
+        dto.setUpdatedAt(currentJob.getUpdatedAt());
+        dto.setUpdatedBy(currentJob.getUpdatedBy());
 
-            return dto;
+        if (currentJob.getSkills() != null) {
+            List<String> skills = currentJob.getSkills()
+                    .stream().map(Skill::getName)
+                    .collect(Collectors.toList());
+            dto.setSkills(skills);
+        }
+
+        return dto;
     }
 
     public void deleteJob(long id) {

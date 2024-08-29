@@ -29,9 +29,6 @@ import vn.hoidanit.jobhunter.util.SecurityUtil;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-    @Value("${hoidanit.jwt.base64-secret}")
-    private String jwtKey;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -39,7 +36,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-            CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+                                           CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
 
         String[] whiteList = {
                 "/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/storage/**",
@@ -96,6 +93,9 @@ public class SecurityConfiguration {
     public JwtEncoder jwtEncoder() {
         return new NimbusJwtEncoder(new ImmutableSecret<>(getSecretKey()));
     }
+
+    @Value("${hoidanit.jwt.base64-secret}")
+    private String jwtKey;
 
     private SecretKey getSecretKey() {
         byte[] keyBytes = Base64.from(jwtKey).decode();
