@@ -27,7 +27,8 @@ public class JobService {
     private final SkillRepository skillRepository;
     private final CompanyRepository companyRepository;
 
-    public JobService(JobRepository jobRepository, SkillRepository skillRepository, CompanyRepository companyRepository) {
+    public JobService(JobRepository jobRepository, SkillRepository skillRepository,
+            CompanyRepository companyRepository) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
         this.companyRepository = companyRepository;
@@ -80,8 +81,6 @@ public class JobService {
     }
 
     public ResUpdateJobDTO updateJob(Job job, Job jobInDB) {
-        ResUpdateJobDTO resDto = new ResUpdateJobDTO();
-
         // check skills
         if (job.getSkills() != null) {
             List<Long> reqSkills = job.getSkills()
