@@ -64,11 +64,12 @@ public class AuthController {
                         userLogin.setId(curUser.getId());
                         userLogin.setEmail(curUser.getEmail());
                         userLogin.setName(curUser.getName());
+                        userLogin.setRole(curUser.getRole());
                         res.setUser(userLogin);
                 }
 
                 // create access_token
-                String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
+                String access_token = this.securityUtil.createAccessToken(authentication.getName(), res);
                 res.setAccessToken(access_token);
 
                 // create refreshToken
@@ -133,11 +134,12 @@ public class AuthController {
                         userLogin.setId(curUserDB.getId());
                         userLogin.setEmail(curUserDB.getEmail());
                         userLogin.setName(curUserDB.getName());
+                        userLogin.setRole(curUser.getRole());
                         res.setUser(userLogin);
                 }
 
                 // create access_token
-                String access_token = this.securityUtil.createAccessToken(email, res.getUser());
+                String access_token = this.securityUtil.createAccessToken(email, res);
                 res.setAccessToken(access_token);
 
                 // create refreshToken
