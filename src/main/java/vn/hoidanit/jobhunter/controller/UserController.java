@@ -44,6 +44,17 @@ public class UserController {
         return ResponseEntity.ok().body(this.userService.fetchAllUsers(spec, pageable));
     }
 
+    @GetMapping("/users/{id}")
+    @ApiMessage("Fetch user by id")
+    public ResponseEntity<ResUserDTO> getUser(@PathVariable("id") long id)
+            throws IdInvalidException {
+        User curUser = this.userService.fetchUserById(id);
+        if (curUser == null) {
+            throw new IdInvalidException("Không tồn tại user với id = " + id);
+        }
+        return ResponseEntity.ok().body(this.userService.convertToResUserDTO(curUser));
+    }
+
     @PostMapping("/users")
     @ApiMessage("Create a new user")
     public ResponseEntity<ResCreateUserDTO> createNewUser(@RequestBody User newUser) {
@@ -53,7 +64,14 @@ public class UserController {
         }
         newUser.setPassword(this.passwordEncoder.encode(newUser.getPassword()));
         User savedUser = this.userService.handleCreateUser(newUser);
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResCreateUserDTO(savedUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(savedUser));
+    }
+
+    @PutMapping("/users")
+    @ApiMessage("Update a user")
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User reqUser) {
+        User curUser = this.userService.handleUpdateUser(reqUser);
+        return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(curUser));
     }
 
     @DeleteMapping("/users/{id}")
@@ -66,21 +84,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/users/{id}")
-    @ApiMessage("Fetch user by id")
-    public ResponseEntity<ResUserDTO> getUser(@PathVariable("id") long id)
-            throws IdInvalidException {
-        User curUser = this.userService.fetchUserById(id);
-        if (curUser == null) {
-            throw new IdInvalidException("Không tồn tại user với id = " + id);
-        }
-        return ResponseEntity.ok().body(this.userService.convertToResUserDTO(curUser));
-    }
-
-    @PutMapping("/users")
-    @ApiMessage("Update a user")
-    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User reqUser) {
-        User curUser = this.userService.handleUpdateUser(reqUser);
-        return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(curUser));
-    }
 }

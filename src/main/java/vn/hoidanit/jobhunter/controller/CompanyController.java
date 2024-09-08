@@ -40,9 +40,21 @@ public class CompanyController {
         return ResponseEntity.ok().body(this.companyService.fetchAll(spec, pageable));
     }
 
+    @GetMapping("companies/{id}")
+    @ApiMessage("fetch company by id")
+    public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") long id) {
+        Optional<Company> cOptional = this.companyService.fetchById(id);
+        return ResponseEntity.ok().body(cOptional.get());
+    }
+
     @PostMapping("/companies")
     public ResponseEntity<Company> postMethodName(@Valid @RequestBody Company company) {
         return ResponseEntity.ok(this.companyService.handleSaveCompany(company));
+    }
+
+    @PutMapping("companies")
+    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company reqCompany) {
+        return ResponseEntity.ok().body(this.companyService.handleUpdateCompany(reqCompany));
     }
 
     @DeleteMapping("/companies/{id}")
@@ -51,15 +63,4 @@ public class CompanyController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("companies")
-    public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company reqCompany) {
-        return ResponseEntity.ok().body(this.companyService.handleUpdateCompany(reqCompany));
-    }
-
-    @GetMapping("companies/{id}")
-    @ApiMessage("fetch company by id")
-    public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") long id){
-        Optional<Company> cOptional = this.companyService.fetchById(id);
-        return ResponseEntity.ok().body(cOptional.get());
-    }
 }

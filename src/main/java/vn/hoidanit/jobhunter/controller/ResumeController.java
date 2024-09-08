@@ -36,6 +36,25 @@ public class ResumeController {
         this.resumeService = resumeService;
     }
 
+    @GetMapping("/resumes")
+    @ApiMessage("Get all resumes")
+    public ResponseEntity<ResultPaginationDTO> getAllResumes(
+            @Filter Specification<Resume> spec,
+            Pageable pageable) {
+        return ResponseEntity.ok().body(this.resumeService.fetchAllResumes(spec, pageable));
+    }
+
+    @GetMapping("/resumes/{id}")
+    @ApiMessage("Get resume by id")
+    public ResponseEntity<ResFetchResumeDTO> getResumeById(@PathVariable("id") long id) {
+        Optional<Resume> dbResume = this.resumeService.fetchById(id);
+        if (dbResume.isEmpty()) {
+            throw new IdInvalidException("Resume with id = " + id + " doesn't exist");
+        }
+
+        return ResponseEntity.ok().body(this.resumeService.getResume(dbResume.get()));
+    }
+
     @PostMapping("/resumes")
     @ApiMessage("Create a resume")
     public ResponseEntity<ResCreateResumeDTO> createResume(@Valid @RequestBody Resume resume) {
@@ -73,25 +92,6 @@ public class ResumeController {
 
         this.resumeService.deleteResume(id);
         return ResponseEntity.ok().body(null);
-    }
-
-    @GetMapping("/resumes/{id}")
-    @ApiMessage("Get resume by id")
-    public ResponseEntity<ResFetchResumeDTO> getResumeById(@PathVariable("id") long id) {
-        Optional<Resume> dbResume = this.resumeService.fetchById(id);
-        if (dbResume.isEmpty()) {
-            throw new IdInvalidException("Resume with id = " + id + " doesn't exist");
-        }
-
-        return ResponseEntity.ok().body(this.resumeService.getResume(dbResume.get()));
-    }
-
-    @GetMapping("/resumes")
-    @ApiMessage("Get all resumes")
-    public ResponseEntity<ResultPaginationDTO> getAllResumes(
-            @Filter Specification<Resume> spec,
-            Pageable pageable) {
-        return ResponseEntity.ok().body(this.resumeService.fetchAllResumes(spec, pageable));
     }
 
     @PostMapping("/resumes/by-user")

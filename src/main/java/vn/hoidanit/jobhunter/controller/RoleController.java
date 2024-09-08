@@ -40,12 +40,21 @@ public class RoleController {
         return ResponseEntity.ok().body(this.roleService.getRoles(spec, pageable));
     }
 
+    @GetMapping("/roles/{id}")
+    @ApiMessage("Fetch role by id")
+    public ResponseEntity<Role> getById(@PathVariable("id") long id) {
+        Role role = this.roleService.fetchById(id);
+        if (role == null)
+            throw new IdInvalidException("Resume with id = " + id + "doesn't exist");
+        return ResponseEntity.ok().body(role);
+    }
+
     @PostMapping("/roles")
     @ApiMessage("Create a role")
     public ResponseEntity<Role> createRole(@Valid @RequestBody Role role) {
         // check name
         if (this.roleService.existByName(role.getName())) {
-            throw new IdInvalidException("Role with name = " + role.getName() + " already exists");
+            throw new IdInvalidException("Role with name = " + role.getName() + " already exist");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.create(role));
@@ -56,24 +65,20 @@ public class RoleController {
     public ResponseEntity<Role> updateRole(@RequestBody Role role) {
         // check id
         if (this.roleService.fetchById(role.getId()) == null)
-            throw new IdInvalidException("Role with id = " + role.getId() + " doesn't exists");
-
-        // check name
-        // if (this.roleService.existByName(role.getName()))
-        // throw new IdInvalidException("Role with name = " + role.getName() + " already
-        // exists");
+            throw new IdInvalidException("Role with id = " + role.getId() + " doesn't exist");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.update(role));
     }
 
-    @DeleteMapping("roles/{id}")
+    @DeleteMapping("/roles/{id}")
     @ApiMessage("Delete a role")
     public ResponseEntity<Void> deleteRole(@PathVariable("id") long id) {
         // check id
         if (this.roleService.fetchById(id) == null)
-            throw new IdInvalidException("Role with id = " + id + " doesn't exists");
+            throw new IdInvalidException("Role with id = " + id + " doesn't exist");
 
         this.roleService.delete(id);
         return ResponseEntity.ok().body(null);
     }
+
 }

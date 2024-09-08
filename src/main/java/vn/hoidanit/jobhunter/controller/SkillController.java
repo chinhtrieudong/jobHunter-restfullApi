@@ -32,6 +32,16 @@ public class SkillController {
         this.skillService = skillService;
     }
 
+    @GetMapping("/skills")
+    @ApiMessage("fetch all skills")
+    public ResponseEntity<ResultPaginationDTO> getAllSkills(
+            @Filter Specification<Skill> spec,
+            Pageable pageable) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.skillService.fetchAllSkills(spec, pageable));
+    }
+
     @PostMapping("/skills")
     @ApiMessage("Create a skill")
     public ResponseEntity<Skill> createSkill(@Valid @RequestBody Skill skill) {
@@ -71,13 +81,4 @@ public class SkillController {
         return ResponseEntity.ok().body(null);
     }
 
-    @GetMapping("/skills")
-    @ApiMessage("fetch all skills")
-    public ResponseEntity<ResultPaginationDTO> getAllSkills(
-            @Filter Specification<Skill> spec,
-            Pageable pageable) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                this.skillService.fetchAllSkills(spec, pageable));
-    }
 }

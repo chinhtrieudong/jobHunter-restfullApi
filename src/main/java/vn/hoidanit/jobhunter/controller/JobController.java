@@ -35,6 +35,25 @@ public class JobController {
         this.jobService = jobService;
     }
 
+    @GetMapping("/jobs")
+    @ApiMessage("Get all job")
+    public ResponseEntity<ResultPaginationDTO> getAllJob(
+            @Filter Specification<Job> spec,
+            Pageable pageable) {
+        return ResponseEntity.ok().body(this.jobService.fetchAllJobs(spec, pageable));
+    }
+
+    @GetMapping("/jobs/{id}")
+    @ApiMessage("Get a job by id")
+    public ResponseEntity<Job> getJob(@PathVariable("id") long id) throws IdInvalidException {
+        Optional<Job> currentJob = this.jobService.fetchJobById(id);
+        if (currentJob.isEmpty()) {
+            throw new IdInvalidException("Job not found");
+        }
+
+        return ResponseEntity.ok().body(currentJob.get());
+    }
+
     @PostMapping("/jobs")
     @ApiMessage("Create a job")
     public ResponseEntity<ResCreateJobDTO> createJob(@RequestBody Job job) {
@@ -62,22 +81,4 @@ public class JobController {
         return ResponseEntity.ok().body(null);
     }
 
-    @GetMapping("/jobs/{id}")
-    @ApiMessage("Get a job by id")
-    public ResponseEntity<Job> getJob(@PathVariable("id") long id) throws IdInvalidException {
-        Optional<Job> currentJob = this.jobService.fetchJobById(id);
-        if (currentJob.isEmpty()) {
-            throw new IdInvalidException("Job not found");
-        }
-
-        return ResponseEntity.ok().body(currentJob.get());
-    }
-
-    @GetMapping("/jobs")
-    @ApiMessage("Get all job")
-    public ResponseEntity<ResultPaginationDTO> getAllJob(
-            @Filter Specification<Job> spec,
-            Pageable pageable) {
-        return ResponseEntity.ok().body(this.jobService.fetchAllJobs(spec, pageable));
-    }
 }

@@ -54,7 +54,8 @@ public class PermissionController {
 
         // check exist by module, api path & method
         if (this.permissionService.isPermissionExist(permission))
-            throw new IdInvalidException("Error: Cannot update permission. Permission already exists.");
+            if (this.permissionService.isSameName(permission))
+                throw new IdInvalidException("Error: Cannot update permission. Permission already exists.");
 
         // update permission
         return ResponseEntity.ok().body(this.permissionService.update(permission));
