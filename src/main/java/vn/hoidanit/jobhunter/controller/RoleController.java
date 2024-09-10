@@ -67,7 +67,7 @@ public class RoleController {
         if (this.roleService.fetchById(role.getId()) == null)
             throw new IdInvalidException("Role with id = " + role.getId() + " doesn't exist");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.update(role));
+        return ResponseEntity.ok().body(this.roleService.update(role));
     }
 
     @DeleteMapping("/roles/{id}")
