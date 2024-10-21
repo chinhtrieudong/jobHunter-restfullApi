@@ -41,7 +41,7 @@ public class AuthController {
     private long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
-                          UserService userService, PasswordEncoder passwordEncoder) {
+            UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
@@ -109,6 +109,7 @@ public class AuthController {
             userLogin.setId(curUser.getId());
             userLogin.setEmail(curUser.getEmail());
             userLogin.setName(curUser.getName());
+            userLogin.setRole(curUser.getRole());
             userGetAccount.setUser(userLogin);
         }
 
