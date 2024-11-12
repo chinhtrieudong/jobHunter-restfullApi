@@ -45,7 +45,7 @@ public class ResumeService {
     private final JobRepository jobRepository;
 
     public ResumeService(ResumeRepository resumeRepository, UserRepository userRepository,
-            JobRepository jobRepository) {
+                         JobRepository jobRepository) {
         this.resumeRepository = resumeRepository;
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
@@ -135,7 +135,7 @@ public class ResumeService {
 
         // remove sensitive data
         List<ResFetchResumeDTO> listResume = pageUser.getContent()
-                .stream().map(item -> this.getResume(item))
+                .stream().map(this::getResume)
                 .collect(Collectors.toList());
 
         res.setResult(listResume);

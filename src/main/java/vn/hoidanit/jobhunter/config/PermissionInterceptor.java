@@ -14,7 +14,7 @@ import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
-import vn.hoidanit.jobhunter.util.error.PermissionExcepiton;
+import vn.hoidanit.jobhunter.util.error.PermissionException;
 
 public class PermissionInterceptor implements HandlerInterceptor {
 
@@ -22,7 +22,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
     UserService userService;
 
     @Override
-    @Transactional //manages database interactions in the method
+    @Transactional
     public boolean preHandle(
             HttpServletRequest request,
             HttpServletResponse response, Object handler)
@@ -37,10 +37,10 @@ public class PermissionInterceptor implements HandlerInterceptor {
         System.out.println(">>> requestURI= " + requestURI);
 
         // check permission
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
-        if (email != null && !email.isEmpty()) {
+        if (!email.isEmpty()) {
             User user = this.userService.getUserByUserName(email);
             if (user != null) {
                 Role role = user.getRole();
@@ -49,11 +49,11 @@ public class PermissionInterceptor implements HandlerInterceptor {
                     boolean isAllow = permissions.stream().anyMatch(item -> item.getApiPath().equals(path)
                             && item.getMethod().equals(httpMethod));
 
-                    if (isAllow == false) {
-                        throw new PermissionExcepiton("Bạn không có quyền truy cập endpoint này");
+                    if (!isAllow) {
+                        throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
                     }
                 } else {
-                    throw new PermissionExcepiton("Bạn không có quyền truy cập endpoint này");
+                    throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
                 }
             }
         }
