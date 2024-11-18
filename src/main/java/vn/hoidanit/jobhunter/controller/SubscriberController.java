@@ -22,7 +22,7 @@ public class SubscriberController {
     @PostMapping("/subscribers")
     @ApiMessage("Create a subscriber")
     public ResponseEntity<Subscriber> createSubscriber(@Valid @RequestBody Subscriber sub) {
-        boolean isExist = this.subscriberService.isExistByEmail(sub.getEmail());
+        boolean isExist = this.subscriberService.isExistsByEmail(sub.getEmail());
         if (isExist) {
             throw new IdInvalidException("Email " + sub.getEmail() + " đã tồn tại");
         }
